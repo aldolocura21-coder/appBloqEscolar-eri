@@ -1,0 +1,6 @@
+{
+  "name": "BloqEscolar Argentina",
+  "description": "App educativa de bloqueo y desbloqueo de celular para primaria y secundaria en Argentina, con actividades curriculares, avatares, retos familiares y premios de tiempo para el fin de semana.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
