@@ -304,7 +304,7 @@ export default function App() {
   return (
     <div
       id="bloqescolar-app"
-      className="min-h-screen w-full bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-sky-500 selection:text-white"
+      className="h-screen h-dvh max-h-screen max-h-dvh w-full bg-slate-950 text-slate-100 flex flex-col justify-between overflow-hidden selection:bg-sky-500 selection:text-white"
     >
       {/* Toast flotante para avisos pedagógicos y puntos ganados */}
       {toastMessage && (
@@ -317,8 +317,8 @@ export default function App() {
         </div>
       )}
 
-      {/* Contenedor principal a pantalla completa real */}
-      <main id="app-main-canvas" className="flex-1 w-full min-h-screen flex flex-col items-center justify-center p-0">
+      {/* Contenedor principal a pantalla completa real adaptativa */}
+      <main id="app-main-canvas" className="flex-1 w-full h-full max-h-full flex flex-col items-center justify-center p-0 overflow-hidden min-h-0">
         {student ? (
           isPhoneLocked ? (
             <PhoneLockScreen
