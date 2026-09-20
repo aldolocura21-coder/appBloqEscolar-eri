@@ -75,6 +75,33 @@ export const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ isOpen, onClos
         </div>
 
         <div className="p-6 space-y-5 text-slate-800 text-sm max-h-[80vh] overflow-y-auto">
+          {/* Instrucción directa para la captura del usuario */}
+          <div className="p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-500/60 space-y-2.5">
+            <div className="flex items-center gap-2 text-emerald-950 font-bold text-xs uppercase tracking-wide">
+              <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center font-extrabold text-xs">
+                ✓
+              </span>
+              <span>Solución inmediata en tu pantalla</span>
+            </div>
+            <p className="text-xs text-emerald-900 leading-relaxed">
+              En el menú de Chrome, cuando te aparece el cartel de <em>"Instalar y crear acceso directo"</em>:
+            </p>
+            <div className="p-3 rounded-xl bg-white border border-emerald-300 text-xs text-slate-800 space-y-1">
+              <p className="font-bold text-emerald-800 flex items-center gap-1.5">
+                <span>👉 Tocá:</span>
+                <span className="bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded font-mono font-bold">
+                  Crear acceso directo
+                </span>
+              </p>
+              <p className="text-[11px] text-slate-600">
+                (Es la opción que tiene el circulito de colores de Chrome con la flecha <strong>&gt;</strong>).
+              </p>
+            </div>
+            <p className="text-[11px] text-emerald-800">
+              Al tocar <strong>"Crear acceso directo"</strong> y luego <strong>"Agregar"</strong>, el ícono de <strong>BloqEscolar</strong> queda colocado en la pantalla de inicio de tu celular al instante.
+            </p>
+          </div>
+
           {/* Explicación del Error "Página no encontrada" */}
           <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-2">
             <div className="flex items-center gap-2 text-amber-900 font-bold text-xs uppercase tracking-wide">

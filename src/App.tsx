@@ -21,6 +21,7 @@ import { WeekendRewardsHub } from './components/WeekendRewardsHub';
 import { ParentalControlModal } from './components/ParentalControlModal';
 import { AvatarDisplay } from './components/AvatarDisplay';
 import { PWAInstallModal } from './components/PWAInstallModal';
+import { triggerAndroidUnlock, triggerAndroidLock } from './services/nativeBridge';
 import {
   Lock,
   Unlock,
@@ -236,6 +237,9 @@ export default function App() {
     setUnlockedRemainingMinutes(30);
     setIsPhoneLocked(false);
 
+    // Disparar desbloqueo nativo (pasar app a segundo plano en Android)
+    triggerAndroidUnlock();
+
     showToast(
       `¡Felicitaciones! Ganaste +${weekendMinutes} min para el fin de semana y 30 min de uso libre ahora.`
     );
@@ -268,6 +272,8 @@ export default function App() {
     setUnlockedRemainingMinutes(45);
     setIsPhoneLocked(false);
 
+    triggerAndroidUnlock();
+
     showToast(
       `¡Reto familiar completado! Sumaron +${weekendMinutes} min de fin de semana y +${points} puntos.`
     );
@@ -278,6 +284,9 @@ export default function App() {
     setUnlockedRemainingMinutes(minutes);
     setIsPhoneLocked(false);
     setActiveModal('none');
+
+    triggerAndroidUnlock();
+
     showToast(
       minutes >= 999
         ? 'Celular desbloqueado libremente por hoy por el adulto.'
@@ -288,107 +297,28 @@ export default function App() {
   // Volver a bloquear
   const handleLockPhone = () => {
     setIsPhoneLocked(true);
+    triggerAndroidLock();
     showToast('El celular volvió al modo bloqueo escolar.');
   };
 
   return (
     <div
       id="bloqescolar-app"
-      className="min-h-screen bg-slate-900 text-slate-100 flex flex-col justify-between selection:bg-sky-500 selection:text-white"
+      className="min-h-screen w-full bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-sky-500 selection:text-white"
     >
-      {/* Barra superior de control del prototipo */}
-      <header
-        id="app-top-nav"
-        className="bg-slate-950/90 backdrop-blur-md border-b border-slate-800 px-4 py-2.5 sticky top-0 z-30"
-      >
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-              🇦🇷
-            </div>
-            <div>
-              <h1 className="text-sm font-bold text-white flex items-center gap-1.5">
-                <span>BloqEscolar Argentina</span>
-                <span className="text-[10px] bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded-full border border-sky-500/30">
-                  Control Educativo
-                </span>
-              </h1>
-              <p className="text-[11px] text-slate-400">
-                Primaria y Secundaria • Bloqueo y Desbloqueo con Desafíos
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {/* Botón rápido para ver estado de bloqueo */}
-            <div className="hidden sm:flex items-center gap-1.5 text-xs bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
-              {isPhoneLocked ? (
-                <>
-                  <Lock className="w-3.5 h-3.5 text-amber-400" />
-                  <span className="text-amber-300 font-semibold">Bloqueo Activo</span>
-                </>
-              ) : (
-                <>
-                  <Unlock className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-emerald-300 font-semibold">
-                    Desbloqueado ({unlockedRemainingMinutes}m)
-                  </span>
-                </>
-              )}
-            </div>
-
-            {/* Botón para instalar en celular */}
-            <button
-              id="top-nav-install-btn"
-              type="button"
-              onClick={() => setActiveModal('install')}
-              className="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-xl border border-emerald-500 flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
-            >
-              <Smartphone className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Instalar en Celular</span>
-              <span className="sm:hidden">Instalar</span>
-            </button>
-
-            {/* Acceso al Panel de Padres */}
-            <button
-              id="top-nav-parent-btn"
-              type="button"
-              onClick={() => setActiveModal('parental')}
-              className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white px-3 py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5 transition-colors cursor-pointer"
-            >
-              <Shield className="w-3.5 h-3.5 text-sky-400" />
-              <span>Modo Padres</span>
-            </button>
-
-            {/* Editar Avatar */}
-            {student && (
-              <button
-                id="top-nav-avatar-btn"
-                type="button"
-                onClick={() => setActiveModal('edit_avatar')}
-                className="p-1 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors cursor-pointer"
-                title="Editar Avatar del Estudiante"
-              >
-                <AvatarDisplay avatar={student.avatar} size="sm" />
-              </button>
-            )}
-          </div>
-        </div>
-      </header>
-
       {/* Toast flotante para avisos pedagógicos y puntos ganados */}
       {toastMessage && (
         <div
           id="app-toast-notification"
-          className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-sky-600 text-white px-5 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 text-xs sm:text-sm font-semibold border border-sky-400 animate-in fade-in slide-in-from-top-4"
+          className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-sky-600 text-white px-5 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 text-xs sm:text-sm font-semibold border border-sky-400 animate-in fade-in slide-in-from-top-4"
         >
           <Sparkles className="w-4 h-4 text-amber-300" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Contenedor central: Simulador de Celular en Argentina */}
-      <main id="app-main-canvas" className="flex-1 max-w-5xl w-full mx-auto px-4 py-6 flex flex-col items-center justify-center">
+      {/* Contenedor principal a pantalla completa real */}
+      <main id="app-main-canvas" className="flex-1 w-full min-h-screen flex flex-col items-center justify-center p-0">
         {student ? (
           isPhoneLocked ? (
             <PhoneLockScreen
@@ -450,8 +380,8 @@ export default function App() {
 
       {/* 3. Modal de Resolución de Actividad (Temporizador de 15-20 min y 2da opción con adulto) */}
       {activeModal === 'activity' && student && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl my-6">
+        <div className="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center p-0 sm:p-4 overflow-y-auto">
+          <div className="w-full h-full sm:h-auto sm:max-w-2xl sm:my-6">
             <ActivityRunner
               student={student}
               initialMinutes={settings.defaultTimerMinutes}
@@ -500,29 +430,6 @@ export default function App() {
         isOpen={activeModal === 'install'}
         onClose={() => setActiveModal('none')}
       />
-
-      {/* Barra de información y pie de página en español */}
-      <footer id="app-footer-info" className="border-t border-slate-800 bg-slate-950 px-6 py-3 text-center text-xs text-slate-400">
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>
-            BloqEscolar Argentina • Sistema Pedagógico de Bloqueo y Recompensas Escolares
-          </span>
-          <div className="flex items-center gap-4 text-slate-400">
-            <button
-              onClick={() => setActiveModal('parental')}
-              className="hover:text-sky-300 underline"
-            >
-              PIN Parental (1234)
-            </button>
-            <button
-              onClick={() => setActiveModal('weekend')}
-              className="hover:text-amber-300 underline"
-            >
-              Bolsa de Finde: {stats.weekendMinutesTotal} min
-            </button>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

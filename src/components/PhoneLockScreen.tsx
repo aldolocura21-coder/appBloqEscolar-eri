@@ -17,6 +17,8 @@ import {
   Wifi,
   BatteryMedium,
   Download,
+  Maximize,
+  Minimize,
 } from 'lucide-react';
 
 interface PhoneLockScreenProps {
@@ -42,6 +44,17 @@ export const PhoneLockScreen: React.FC<PhoneLockScreenProps> = ({
 }) => {
   const [currentTime, setCurrentTime] = useState('');
   const [currentDate, setCurrentDate] = useState('');
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.().catch(() => {});
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen?.().catch(() => {});
+      setIsFullscreen(false);
+    }
+  };
 
   useEffect(() => {
     const updateTime = () => {
@@ -68,17 +81,14 @@ export const PhoneLockScreen: React.FC<PhoneLockScreenProps> = ({
   const isFamilyChallengeRecommended = true;
 
   return (
-    <div id="phone-lock-screen" className="w-full max-w-md mx-auto rounded-[40px] bg-slate-950 text-white shadow-2xl border-8 border-slate-900 overflow-hidden relative min-h-[720px] flex flex-col justify-between select-none">
+    <div id="phone-lock-screen" className="w-full min-h-screen bg-slate-950 text-white overflow-hidden relative flex flex-col justify-between select-none">
       {/* Barra superior de estado de celular */}
-      <div className="pt-3 px-6 pb-2 flex items-center justify-between text-xs text-slate-300 font-medium z-10">
+      <div className="pt-4 px-6 pb-2 flex items-center justify-between text-xs text-slate-300 font-medium z-10">
         <div className="flex items-center gap-1.5">
           <span className="font-bold text-white tracking-wider">{currentTime || '15:30'}</span>
           <span className="text-[10px] text-sky-400 bg-sky-950/60 px-1.5 py-0.5 rounded border border-sky-800/50">
-            Escolar
+            Modo Escolar
           </span>
-        </div>
-        <div className="w-20 h-4 bg-slate-900 rounded-full mx-auto -mt-1 flex items-center justify-center">
-          <div className="w-2.5 h-2.5 bg-slate-800 rounded-full"></div>
         </div>
         <div className="flex items-center gap-2">
           <Wifi className="w-3.5 h-3.5" />
@@ -92,9 +102,20 @@ export const PhoneLockScreen: React.FC<PhoneLockScreenProps> = ({
 
       {/* Reloj central grande de pantalla de bloqueo */}
       <div className="px-6 pt-6 text-center z-10">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/90 border border-slate-800 text-slate-300 text-xs mb-3 shadow-inner">
-          <Lock className="w-3.5 h-3.5 text-amber-400" />
-          <span>Celular Bloqueado por Horario de Estudio</span>
+        <div className="flex items-center justify-center gap-2 mb-3 flex-wrap">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/90 border border-slate-800 text-slate-300 text-xs shadow-inner">
+            <Lock className="w-3.5 h-3.5 text-amber-400" />
+            <span>Celular Bloqueado por Horario de Estudio</span>
+          </div>
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-sky-950/80 hover:bg-sky-900 border border-sky-600/50 text-sky-300 text-xs transition-colors cursor-pointer"
+            title="Poner a pantalla completa sin barras del navegador"
+          >
+            {isFullscreen ? <Minimize className="w-3 h-3" /> : <Maximize className="w-3 h-3" />}
+            <span className="text-[10px] font-bold">{isFullscreen ? 'Salir' : 'Pantalla Completa'}</span>
+          </button>
         </div>
 
         <h1 className="text-5xl font-extrabold tracking-tight text-white font-sans">
@@ -168,17 +189,17 @@ export const PhoneLockScreen: React.FC<PhoneLockScreenProps> = ({
           className="w-full py-4 px-5 rounded-2xl bg-linear-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-white font-bold text-sm shadow-lg shadow-sky-600/30 flex items-center justify-between transition-all cursor-pointer transform active:scale-[0.98]"
         >
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-white/20 text-white">
+            <div className="p-2.5 rounded-xl bg-white/20 text-white">
               <Unlock className="w-5 h-5" />
             </div>
             <div className="text-left">
-              <p className="text-sm font-extrabold">Resolver Desafío ({timerMinutes} min)</p>
+              <p className="text-sm font-extrabold">Resolver Ronda Escolar (5 Actividades)</p>
               <p className="text-[11px] text-sky-100 font-normal">
-                Curricular / No curricular • Sumá +15 a 20 min
+                Completá las 5 actividades para liberar el celular
               </p>
             </div>
           </div>
-          <ChevronRight className="w-5 h-5 text-white" />
+          <ChevronRight className="w-5 h-5 text-white shrink-0" />
         </button>
 
         {/* Botón secundario: Reto Familiar Día por Medio */}
